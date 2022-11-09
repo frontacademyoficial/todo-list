@@ -21,7 +21,10 @@ const UserTasks = () => {
   const newTodo = useInputValue("");
   const [addLoading, setLoading] = useState(false);
 
-  const items = [];
+  const items = [
+    { id: 1, completed: false, text: "TODO 1" },
+    { id: 2, completed: true, text: "TODO 2" },
+  ];
 
   const handleAddTodo = () => {
     setLoading(true);
@@ -90,12 +93,8 @@ const UserTasks = () => {
     </Box>
   );
 
-  const onToggle = (todo) => {
-    console.log("onToggle", todo);
-  };
-
-  const onUpdate = (todo) => {
-    console.log("onUpdate", todo);
+  const onToggle = (todoId, field, value) => {
+    console.log("onToggle", todoId, field, value);
   };
 
   const onEdit = (todo, value) => {
@@ -114,7 +113,7 @@ const UserTasks = () => {
           <ListItem key={todo.id} role={undefined} dense>
             <ListItemIcon>
               <Checkbox
-                onClick={onToggle(todo.id, "completed", !todo.completed, true)}
+                onClick={onToggle(todo.id, "completed", !todo.completed)}
                 edge="start"
                 checked={todo.completed}
                 tabIndex={-1}
@@ -124,10 +123,8 @@ const UserTasks = () => {
             <Input
               id={labelId}
               value={todo.text}
-              onFocus={onToggle(todo.id, "editable", true)}
-              onBlur={() => onUpdate(todo)}
               sx={{
-                padding: 20,
+                padding: 2.5,
                 width: "100%",
                 "&:before": {
                   borderBottom: 0,
@@ -174,11 +171,12 @@ const UserTasks = () => {
     );
   };
 
-  // Main renderer
   return (
     <Card sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
       {renderInputTodo()}
+
       {items && items.length < 1 ? renderEmptyTodos() : renderTodoList()}
+
       {items.length > 0 && (
         <Box display="flex">
           {renderCompletedTodos()}
