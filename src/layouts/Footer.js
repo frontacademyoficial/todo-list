@@ -6,6 +6,8 @@ const Footer = () => {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: "#eaeaea",
+        padding: 8,
       }}
     >
       <a
