@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
@@ -16,20 +16,32 @@ import Tooltip from "@mui/material/Tooltip";
 import { filter } from "lodash";
 import { useInputValue } from "../../hooks/useInputValue";
 import emptyTodos from "./assets/empty_todos.svg";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addTodo,
+  deleteTodo,
+  fetchTodos,
+  selectTodoItems,
+  selectTodoAddStatus,
+  updateTodo,
+} from "../../store/todoSlice";
 
 const UserTasks = () => {
-  const newTodo = useInputValue("");
-  const [addLoading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
-  const items = [
-    { id: 1, completed: false, text: "TODO 1" },
-    { id: 2, completed: true, text: "TODO 2" },
-  ];
+  const newTodo = useInputValue("");
+
+  const items = useSelector(selectTodoItems);
+  const addLoading = useSelector(selectTodoAddStatus) === "loading";
+
+  useEffect(() => {
+    dispatch(fetchTodos());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAddTodo = () => {
-    setLoading(true);
     // Send to redux
-    console.log("handleAddTodo", newTodo.value);
+    dispatch(addTodo({ userId: 1, title: newTodo.value, completed: false }));
     // Clear txt input
     newTodo.onChange("");
   };
@@ -93,36 +105,37 @@ const UserTasks = () => {
     </Box>
   );
 
-  const onToggle = (todoId, field, value) => {
-    console.log("onToggle", todoId, field, value);
+  const onToggle = (todoId, value) => {
+    dispatch(updateTodo({ todoId, values: { completed: value } }));
   };
 
-  const onEdit = (todo, value) => {
-    console.log("onEdit", todo, value);
+  const onEdit = (todoId, value) => {
+    dispatch(updateTodo({ todoId, values: { title: value } }));
   };
 
   const onRemove = (todoId) => {
-    console.log("onRemove", todoId);
+    dispatch(deleteTodo(todoId));
   };
 
   const renderTodoList = () => (
     <List sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
-      {items.map((todo) => {
+      {items.map((todo, index) => {
         const labelId = `checkbox-list-label-${todo.id}`;
         return (
-          <ListItem key={todo.id} role={undefined} dense>
+          <ListItem key={`${todo.id} ${index}`} role={undefined} dense>
             <ListItemIcon>
               <Checkbox
-                onClick={onToggle(todo.id, "completed", !todo.completed)}
+                onChange={(e) => onToggle(todo.id, e.target.checked)}
                 edge="start"
-                checked={todo.completed}
+                defaultChecked={todo.completed}
                 tabIndex={-1}
                 inputProps={{ "aria-labelledby": labelId }}
               />
             </ListItemIcon>
             <Input
               id={labelId}
-              value={todo.text}
+              onBlur={(e) => onEdit(todo.id, e.target.value)}
+              defaultValue={todo.title}
               sx={{
                 padding: 2.5,
                 width: "100%",
@@ -131,14 +144,11 @@ const UserTasks = () => {
                 },
                 textDecoration: todo.completed ? "line-through" : undefined,
               }}
-              onChange={(evt) => {
-                onEdit(todo.id, evt.target.value);
-              }}
-              placeholder="Edit todo item.."
+              placeholder="Editar item.."
               inputProps={{ "aria-label": "description" }}
             />
             <ListItemSecondaryAction>
-              <Tooltip title="Delete">
+              <Tooltip title="Excluir">
                 <IconButton
                   edge="end"
                   onClick={() => onRemove(todo.id)}
@@ -165,7 +175,7 @@ const UserTasks = () => {
           textAlign: "start",
         }}
       >
-        Completed items:&nbsp;
+        Itens concluídos:&nbsp;
         {completedTodos.length}
       </p>
     );
@@ -188,7 +198,7 @@ const UserTasks = () => {
               textAlign: "start",
             }}
           >
-            Total items:&nbsp;
+            Total:&nbsp;
             {items.length}
           </p>
         </Box>

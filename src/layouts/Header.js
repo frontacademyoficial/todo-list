@@ -18,7 +18,7 @@ const Header = () => {
             />
 
             <Box justifySelf="center">
-              <Typography variant="h6">Todo List</Typography>
+              <Typography variant="h6">TODO List</Typography>
             </Box>
 
             <div />
