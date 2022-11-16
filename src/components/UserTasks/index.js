@@ -1,4 +1,3 @@
-import { useState } from "react";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
@@ -16,22 +15,19 @@ import Tooltip from "@mui/material/Tooltip";
 import { filter } from "lodash";
 import { useInputValue } from "../../hooks/useInputValue";
 import emptyTodos from "./assets/empty_todos.svg";
+import { useSelector, useDispatch } from "react-redux";
+import { addTodo, deleteTodo, editTodo } from "../../store/todoSlice";
 
 const UserTasks = () => {
   const newTodo = useInputValue("");
-  const [addLoading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
-  const [items, setItems] = useState([
-    { id: 1, completed: false, text: "TODO 1" },
-    { id: 2, completed: true, text: "TODO 2" },
-  ]);
+  const { items, loading } = useSelector((state) => state.todo);
 
   const handleAddTodo = () => {
-    setLoading(true);
-    setItems([{ id: 3, completed: false, text: newTodo.value }, ...items]);
+    dispatch(addTodo({ id: 3, completed: false, text: newTodo.value }));
     // Clear txt input
     newTodo.onChange("");
-    setLoading(false);
   };
 
   const renderInputTodo = () => (
@@ -58,7 +54,7 @@ const UserTasks = () => {
                     <SendIcon
                       color={newTodo.value.length < 2 ? "disabled" : "primary"}
                     />
-                    {addLoading && (
+                    {loading && (
                       <CircularProgress
                         size={44}
                         sx={{
@@ -94,31 +90,27 @@ const UserTasks = () => {
   );
 
   const onToggle = (todoId, value) => {
-    setItems(
-      items.map((item) => {
-        if (item.id === todoId) {
-          item.completed = value;
-        }
-
-        return item;
+    dispatch(
+      editTodo({
+        todoId,
+        field: "completed",
+        value,
       })
     );
   };
 
   const onEdit = (todoId, value) => {
-    setItems(
-      items.map((item) => {
-        if (item.id === todoId) {
-          item.text = value;
-        }
-
-        return item;
+    dispatch(
+      editTodo({
+        todoId,
+        field: "text",
+        value,
       })
     );
   };
 
   const onRemove = (todoId) => {
-    setItems(items.filter((item) => item.id !== todoId));
+    dispatch(deleteTodo(todoId));
   };
 
   const renderTodoList = () => (
