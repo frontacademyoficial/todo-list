@@ -21,17 +21,17 @@ const UserTasks = () => {
   const newTodo = useInputValue("");
   const [addLoading, setLoading] = useState(false);
 
-  const items = [
+  const [items, setItems] = useState([
     { id: 1, completed: false, text: "TODO 1" },
     { id: 2, completed: true, text: "TODO 2" },
-  ];
+  ]);
 
   const handleAddTodo = () => {
     setLoading(true);
-    // Send to redux
-    console.log("handleAddTodo", newTodo.value);
+    setItems([{ id: 3, completed: false, text: newTodo.value }, ...items]);
     // Clear txt input
     newTodo.onChange("");
+    setLoading(false);
   };
 
   const renderInputTodo = () => (
@@ -93,16 +93,32 @@ const UserTasks = () => {
     </Box>
   );
 
-  const onToggle = (todoId, field, value) => {
-    console.log("onToggle", todoId, field, value);
+  const onToggle = (todoId, value) => {
+    setItems(
+      items.map((item) => {
+        if (item.id === todoId) {
+          item.completed = value;
+        }
+
+        return item;
+      })
+    );
   };
 
-  const onEdit = (todo, value) => {
-    console.log("onEdit", todo, value);
+  const onEdit = (todoId, value) => {
+    setItems(
+      items.map((item) => {
+        if (item.id === todoId) {
+          item.text = value;
+        }
+
+        return item;
+      })
+    );
   };
 
   const onRemove = (todoId) => {
-    console.log("onRemove", todoId);
+    setItems(items.filter((item) => item.id !== todoId));
   };
 
   const renderTodoList = () => (
@@ -113,7 +129,7 @@ const UserTasks = () => {
           <ListItem key={todo.id} role={undefined} dense>
             <ListItemIcon>
               <Checkbox
-                onClick={onToggle(todo.id, "completed", !todo.completed)}
+                onChange={() => onToggle(todo.id, !todo.completed)}
                 edge="start"
                 checked={todo.completed}
                 tabIndex={-1}
@@ -188,7 +204,7 @@ const UserTasks = () => {
               textAlign: "start",
             }}
           >
-            Total items:&nbsp;
+            Total:&nbsp;
             {items.length}
           </p>
         </Box>
