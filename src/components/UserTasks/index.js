@@ -165,7 +165,7 @@ const UserTasks = () => {
           textAlign: "start",
         }}
       >
-        Completed items:&nbsp;
+        Items concluídos:&nbsp;
         {completedTodos.length}
       </p>
     );
