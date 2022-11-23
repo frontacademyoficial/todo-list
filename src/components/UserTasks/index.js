@@ -16,17 +16,26 @@ import { filter } from "lodash";
 import { useInputValue } from "../../hooks/useInputValue";
 import emptyTodos from "./assets/empty_todos.svg";
 import { useSelector, useDispatch } from "react-redux";
-import { addTodo, deleteTodo, editTodo } from "../../store/todoSlice";
+import {
+  addTodo,
+  deleteTodo,
+  editTodo,
+  fetchTodos,
+} from "../../store/todoSlice";
+import { useEffect } from "react";
 
 const UserTasks = () => {
   const newTodo = useInputValue("");
   const dispatch = useDispatch();
 
-  const { items, loading } = useSelector((state) => state.todo);
+  const { items, status } = useSelector((state) => state.todo);
+
+  useEffect(() => {
+    dispatch(fetchTodos());
+  }, [dispatch]);
 
   const handleAddTodo = () => {
-    dispatch(addTodo({ id: 3, completed: false, text: newTodo.value }));
-    // Clear txt input
+    dispatch(addTodo(newTodo.value));
     newTodo.onChange("");
   };
 
@@ -54,7 +63,7 @@ const UserTasks = () => {
                     <SendIcon
                       color={newTodo.value.length < 2 ? "disabled" : "primary"}
                     />
-                    {loading && (
+                    {status === "loading" && (
                       <CircularProgress
                         size={44}
                         sx={{
@@ -93,8 +102,7 @@ const UserTasks = () => {
     dispatch(
       editTodo({
         todoId,
-        field: "completed",
-        value,
+        completed: value,
       })
     );
   };
@@ -103,8 +111,7 @@ const UserTasks = () => {
     dispatch(
       editTodo({
         todoId,
-        field: "text",
-        value,
+        title: value,
       })
     );
   };
@@ -130,7 +137,7 @@ const UserTasks = () => {
             </ListItemIcon>
             <Input
               id={labelId}
-              value={todo.text}
+              value={todo.title}
               sx={{
                 padding: 2.5,
                 width: "100%",
