@@ -120,7 +120,7 @@ const UserTasks = () => {
     dispatch(deleteTodo(todoId));
   };
 
-  const renderTodoList = () => (
+  const renderTodoList = (
     <List sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
       {items.map((todo) => {
         const labelId = `checkbox-list-label-${todo.id}`;
@@ -190,7 +190,7 @@ const UserTasks = () => {
     <Card sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
       {renderInputTodo()}
 
-      {items && items.length < 1 ? renderEmptyTodos() : renderTodoList()}
+      {items && items.length < 1 ? renderEmptyTodos() : renderTodoList}
 
       {items.length > 0 && (
         <Box display="flex">
