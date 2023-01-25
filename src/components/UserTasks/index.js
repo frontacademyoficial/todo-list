@@ -46,7 +46,7 @@ const UserTasks = () => {
     newTodo.onChange("");
   };
 
-  const renderInputTodo = () => (
+  const renderInputTodo = (
     <List component="nav" aria-label="main add-todo field">
       <Input
         {...newTodo}
@@ -183,7 +183,7 @@ const UserTasks = () => {
 
   return (
     <Card sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
-      {renderInputTodo()}
+      {renderInputTodo}
 
       {items && items.length < 1 ? renderEmptyTodos() : renderTodoList}
 
