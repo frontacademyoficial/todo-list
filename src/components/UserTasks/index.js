@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
@@ -16,33 +15,27 @@ import Tooltip from "@mui/material/Tooltip";
 import { filter } from "lodash";
 import { useInputValue } from "../../hooks/useInputValue";
 import emptyTodos from "./assets/empty_todos.svg";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   addTodo,
   deleteTodo,
+  editTodo,
   fetchTodos,
-  selectTodoItems,
-  selectTodoAddStatus,
-  updateTodo,
 } from "../../store/todoSlice";
+import { useEffect } from "react";
 
 const UserTasks = () => {
+  const newTodo = useInputValue("");
   const dispatch = useDispatch();
 
-  const newTodo = useInputValue("");
-
-  const items = useSelector(selectTodoItems);
-  const addLoading = useSelector(selectTodoAddStatus) === "loading";
+  const { items, status } = useSelector((state) => state.todo);
 
   useEffect(() => {
     dispatch(fetchTodos());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   const handleAddTodo = () => {
-    // Send to redux
-    dispatch(addTodo({ userId: 1, title: newTodo.value, completed: false }));
-    // Clear txt input
+    dispatch(addTodo(newTodo.value));
     newTodo.onChange("");
   };
 
@@ -70,7 +63,7 @@ const UserTasks = () => {
                     <SendIcon
                       color={newTodo.value.length < 2 ? "disabled" : "primary"}
                     />
-                    {addLoading && (
+                    {status === "loading" && (
                       <CircularProgress
                         size={44}
                         sx={{
@@ -106,18 +99,28 @@ const UserTasks = () => {
   );
 
   const onToggle = (todoId, value) => {
-    dispatch(updateTodo({ todoId, values: { completed: value } }));
+    dispatch(
+      editTodo({
+        todoId,
+        completed: value,
+      })
+    );
   };
 
   const onEdit = (todoId, value) => {
-    dispatch(updateTodo({ todoId, values: { title: value } }));
+    dispatch(
+      editTodo({
+        todoId,
+        title: value,
+      })
+    );
   };
 
   const onRemove = (todoId) => {
     dispatch(deleteTodo(todoId));
   };
 
-  const renderTodoList = () => (
+  const renderTodoList = (
     <List sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
       {items.map((todo, index) => {
         const labelId = `checkbox-list-label-${todo.id}`;
@@ -125,7 +128,7 @@ const UserTasks = () => {
           <ListItem key={`${todo.id} ${index}`} role={undefined} dense>
             <ListItemIcon>
               <Checkbox
-                onChange={(e) => onToggle(todo.id, e.target.checked)}
+                onChange={() => onToggle(todo.id, !todo.completed)}
                 edge="start"
                 defaultChecked={todo.completed}
                 tabIndex={-1}
@@ -134,8 +137,7 @@ const UserTasks = () => {
             </ListItemIcon>
             <Input
               id={labelId}
-              onBlur={(e) => onEdit(todo.id, e.target.value)}
-              defaultValue={todo.title}
+              value={todo.title}
               sx={{
                 padding: 2.5,
                 width: "100%",
@@ -175,7 +177,7 @@ const UserTasks = () => {
           textAlign: "start",
         }}
       >
-        Itens concluídos:&nbsp;
+        Items concluídos:&nbsp;
         {completedTodos.length}
       </p>
     );
@@ -185,7 +187,7 @@ const UserTasks = () => {
     <Card sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
       {renderInputTodo()}
 
-      {items && items.length < 1 ? renderEmptyTodos() : renderTodoList()}
+      {items && items.length < 1 ? renderEmptyTodos() : renderTodoList}
 
       {items.length > 0 && (
         <Box display="flex">

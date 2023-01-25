@@ -1,38 +1,33 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-export const fetchTodos = createAsyncThunk("todo/fetchTodos", async () => {
+export const fetchTodos = createAsyncThunk("todos/fetch", async () => {
   const response = await axios.get(
     "https://jsonplaceholder.typicode.com/todos"
   );
 
-  return response.data.splice(0, 2);
+  return response.data.slice(0, 4);
 });
 
-export const addTodo = createAsyncThunk("todo/addTodo", async (todo) => {
+export const addTodo = createAsyncThunk("todos/add", async (title) => {
   const response = await axios.post(
     "https://jsonplaceholder.typicode.com/todos",
-    todo
+    { title, completed: false }
   );
 
   return response.data;
 });
 
-export const deleteTodo = createAsyncThunk(
-  "todo/deleteTodo",
-  async (todoId) => {
-    const response = await axios.delete(
-      `https://jsonplaceholder.typicode.com/todos/${todoId}`
-    );
+export const deleteTodo = createAsyncThunk("todos/delete", async (todoId) => {
+  await axios.delete(`https://jsonplaceholder.typicode.com/todos/${todoId}`);
 
-    return response.data;
-  }
-);
+  return todoId;
+});
 
-export const updateTodo = createAsyncThunk("todo/updateTodo", async (data) => {
+export const editTodo = createAsyncThunk("todos/edit", async (data) => {
   const response = await axios.patch(
     `https://jsonplaceholder.typicode.com/todos/${data.todoId}`,
-    data.values
+    data
   );
 
   return response.data;
@@ -41,69 +36,67 @@ export const updateTodo = createAsyncThunk("todo/updateTodo", async (data) => {
 export const todoSlice = createSlice({
   name: "todo",
   initialState: {
-    status: "idle",
-    addStatus: "idle",
-    error: "",
     items: [],
+    status: "idle",
+    error: "",
   },
   reducers: {},
   extraReducers(builder) {
-    builder
-      .addCase(fetchTodos.pending, (state, action) => {
-        state.status = "loading";
-      })
-      .addCase(fetchTodos.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.items = action.payload;
-      })
-      .addCase(fetchTodos.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      })
+    builder.addCase(fetchTodos.pending, (state, action) => {
+      state.status = "loading";
+    });
+    builder.addCase(fetchTodos.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.items = action.payload;
+    });
+    builder.addCase(fetchTodos.rejected, (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    });
 
-      .addCase(addTodo.pending, (state, action) => {
-        state.addStatus = "loading";
-      })
-      .addCase(addTodo.fulfilled, (state, action) => {
-        state.addStatus = "succeeded";
-        state.items = [action.payload, ...state.items];
-      })
-      .addCase(addTodo.rejected, (state, action) => {
-        state.addStatus = "failed";
-        state.error = action.error.message;
-      })
+    builder.addCase(addTodo.pending, (state, action) => {
+      state.status = "loading";
+    });
+    builder.addCase(addTodo.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.items = [action.payload, ...state.items];
+    });
+    builder.addCase(addTodo.rejected, (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    });
 
-      .addCase(deleteTodo.pending, (state, action) => {
-        state.status = "loading";
-      })
-      .addCase(deleteTodo.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.items = state.items.filter((item) => item.id !== action.meta.arg);
-      })
-      .addCase(deleteTodo.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      })
+    builder.addCase(deleteTodo.pending, (state, action) => {
+      state.status = "loading";
+    });
+    builder.addCase(deleteTodo.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    });
+    builder.addCase(deleteTodo.rejected, (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    });
 
-      .addCase(updateTodo.pending, (state, action) => {
-        state.status = "loading";
-      })
-      .addCase(updateTodo.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.items = state.items.map((item) => {
-          if (item.id === action.payload.id) {
-            return action.payload;
-          }
-
-          return item;
-        });
-      })
-      .addCase(updateTodo.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
+    builder.addCase(editTodo.pending, (state, action) => {
+      state.status = "loading";
+    });
+    builder.addCase(editTodo.fulfilled, (state, action) => {
+      console.log({ action });
+      state.status = "succeeded";
+      state.items = state.items.map((item) => {
+        if (item.id === action.payload.id) {
+          item = {
+            ...item,
+            ...action.payload,
+          };
+        }
+        return item;
       });
+    });
+    builder.addCase(editTodo.rejected, (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    });
   },
 });
-
-export const selectTodoItems = (state) => state.todo.items ?? [];
-export const selectTodoAddStatus = (state) => state.todo.addStatus;
