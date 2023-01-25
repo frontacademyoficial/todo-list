@@ -39,7 +39,7 @@ const UserTasks = () => {
     newTodo.onChange("");
   };
 
-  const renderInputTodo = () => (
+  const renderInputTodo = (
     <List component="nav" aria-label="main add-todo field">
       <Input
         {...newTodo}
