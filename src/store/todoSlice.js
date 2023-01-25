@@ -6,7 +6,7 @@ export const fetchTodos = createAsyncThunk("todos/fetch", async () => {
     "https://jsonplaceholder.typicode.com/todos"
   );
 
-  return response.data.slice(0, 4);
+  return response.data;
 });
 
 export const addTodo = createAsyncThunk("todos/add", async ({ title }) => {

@@ -1,13 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, memo } from "react";
 import List from "@mui/material/List";
 import Box from "@mui/material/Box";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
-import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import Input from "@mui/material/Input";
 import Card from "@mui/material/Card";
@@ -19,12 +14,13 @@ import emptyTodos from "./assets/empty_todos.svg";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addTodo,
-  deleteTodo,
   fetchTodos,
   selectTodoItems,
   selectTodoAddStatus,
-  updateTodo,
 } from "../../store/todoSlice";
+import TodoList from "./TodoList";
+
+const TodoListMemoized = memo(TodoList);
 
 const UserTasks = () => {
   const dispatch = useDispatch();
@@ -91,6 +87,67 @@ const UserTasks = () => {
     </List>
   );
 
+  // const renderTodoList = useMemo(() => {
+  //   const onToggle = (todoId, value) => {
+  //     dispatch(updateTodo({ todoId, values: { completed: value } }));
+  //   };
+
+  //   const onEdit = (todoId, value) => {
+  //     dispatch(updateTodo({ todoId, values: { title: value } }));
+  //   };
+
+  //   const onRemove = (todoId) => {
+  //     dispatch(deleteTodo(todoId));
+  //   };
+
+  //   return (
+  //     <List sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
+  //       {items.map((todo, index) => {
+  //         const labelId = `checkbox-list-label-${todo.id}`;
+  //         return (
+  //           <ListItem key={`${todo.id} ${index}`} role={undefined} dense>
+  //             <ListItemIcon>
+  //               <Checkbox
+  //                 onChange={(e) => onToggle(todo.id, e.target.checked)}
+  //                 edge="start"
+  //                 defaultChecked={todo.completed}
+  //                 tabIndex={-1}
+  //                 inputProps={{ "aria-labelledby": labelId }}
+  //               />
+  //             </ListItemIcon>
+  //             <Input
+  //               id={labelId}
+  //               onBlur={(e) => onEdit(todo.id, e.target.value)}
+  //               defaultValue={todo.title}
+  //               sx={{
+  //                 padding: 2.5,
+  //                 width: "100%",
+  //                 "&:before": {
+  //                   borderBottom: 0,
+  //                 },
+  //                 textDecoration: todo.completed ? "line-through" : undefined,
+  //               }}
+  //               placeholder="Editar item.."
+  //               inputProps={{ "aria-label": "description" }}
+  //             />
+  //             <ListItemSecondaryAction>
+  //               <Tooltip title="Excluir">
+  //                 <IconButton
+  //                   edge="end"
+  //                   onClick={() => onRemove(todo.id)}
+  //                   aria-label="delete"
+  //                 >
+  //                   <DeleteIcon color="error" />
+  //                 </IconButton>
+  //               </Tooltip>
+  //             </ListItemSecondaryAction>
+  //           </ListItem>
+  //         );
+  //       })}
+  //     </List>
+  //   );
+  // }, [items, dispatch]);
+
   const renderEmptyTodos = () => (
     <Box
       display="flex"
@@ -103,65 +160,6 @@ const UserTasks = () => {
       <h1>Você não tem tarefas</h1>
       <p style={{ color: "#999999" }}>Aqui você verá as tarefas criadas</p>
     </Box>
-  );
-
-  const onToggle = (todoId, value) => {
-    dispatch(updateTodo({ todoId, values: { completed: value } }));
-  };
-
-  const onEdit = (todoId, value) => {
-    dispatch(updateTodo({ todoId, values: { title: value } }));
-  };
-
-  const onRemove = (todoId) => {
-    dispatch(deleteTodo(todoId));
-  };
-
-  const renderTodoList = (
-    <List sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
-      {items.map((todo, index) => {
-        const labelId = `checkbox-list-label-${todo.id}`;
-        return (
-          <ListItem key={`${todo.id} ${index}`} role={undefined} dense>
-            <ListItemIcon>
-              <Checkbox
-                onChange={(e) => onToggle(todo.id, e.target.checked)}
-                edge="start"
-                defaultChecked={todo.completed}
-                tabIndex={-1}
-                inputProps={{ "aria-labelledby": labelId }}
-              />
-            </ListItemIcon>
-            <Input
-              id={labelId}
-              onBlur={(e) => onEdit(todo.id, e.target.value)}
-              defaultValue={todo.title}
-              sx={{
-                padding: 2.5,
-                width: "100%",
-                "&:before": {
-                  borderBottom: 0,
-                },
-                textDecoration: todo.completed ? "line-through" : undefined,
-              }}
-              placeholder="Editar item.."
-              inputProps={{ "aria-label": "description" }}
-            />
-            <ListItemSecondaryAction>
-              <Tooltip title="Excluir">
-                <IconButton
-                  edge="end"
-                  onClick={() => onRemove(todo.id)}
-                  aria-label="delete"
-                >
-                  <DeleteIcon color="error" />
-                </IconButton>
-              </Tooltip>
-            </ListItemSecondaryAction>
-          </ListItem>
-        );
-      })}
-    </List>
   );
 
   const renderCompletedTodos = () => {
@@ -185,7 +183,11 @@ const UserTasks = () => {
     <Card sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
       {renderInputTodo}
 
-      {items && items.length < 1 ? renderEmptyTodos() : renderTodoList}
+      {items && items.length < 1 ? (
+        renderEmptyTodos()
+      ) : (
+        <TodoListMemoized items={items} />
+      )}
 
       {items.length > 0 && (
         <Box display="flex">
