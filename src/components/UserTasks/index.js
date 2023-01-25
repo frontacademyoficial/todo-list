@@ -122,15 +122,15 @@ const UserTasks = () => {
 
   const renderTodoList = (
     <List sx={{ width: "100%", padding: 0, marginBottom: 2 }}>
-      {items.map((todo) => {
+      {items.map((todo, index) => {
         const labelId = `checkbox-list-label-${todo.id}`;
         return (
-          <ListItem key={todo.id} role={undefined} dense>
+          <ListItem key={`${todo.id} ${index}`} role={undefined} dense>
             <ListItemIcon>
               <Checkbox
                 onChange={() => onToggle(todo.id, !todo.completed)}
                 edge="start"
-                checked={todo.completed}
+                defaultChecked={todo.completed}
                 tabIndex={-1}
                 inputProps={{ "aria-labelledby": labelId }}
               />
@@ -146,14 +146,11 @@ const UserTasks = () => {
                 },
                 textDecoration: todo.completed ? "line-through" : undefined,
               }}
-              onChange={(evt) => {
-                onEdit(todo.id, evt.target.value);
-              }}
-              placeholder="Edit todo item.."
+              placeholder="Editar item.."
               inputProps={{ "aria-label": "description" }}
             />
             <ListItemSecondaryAction>
-              <Tooltip title="Delete">
+              <Tooltip title="Excluir">
                 <IconButton
                   edge="end"
                   onClick={() => onRemove(todo.id)}

@@ -5,7 +5,7 @@ import HomeContainer from "./containers/HomeContainer";
 export default function App() {
   return (
     <MainLayout>
-      <Box sx={{ width: "100%", marginTop: "80px" }}>
+      <Box sx={{ width: "100%", marginTop: "60px" }}>
         <HomeContainer />
       </Box>
     </MainLayout>
