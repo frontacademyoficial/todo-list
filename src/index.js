@@ -6,8 +6,6 @@ import store from "./store/store";
 import { Provider } from "react-redux";
 import { SnackbarProvider } from "notistack";
 import "./styles/index.scss";
-import store from "./store/store";
-import { Provider } from "react-redux";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
