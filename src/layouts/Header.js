@@ -3,8 +3,15 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import logo from "../images/front-academy-logo.png";
+import { Button } from "@mui/material";
 
 const Header = () => {
+  const user = {};
+  const logout = () => {
+    console.log("logout");
+  };
+  const isLoggedIn = false;
+
   return (
     <>
       <Box
@@ -29,7 +36,16 @@ const Header = () => {
                 <Typography variant="h6">TODO List</Typography>
               </Box>
 
-              <div />
+              <Box display="flex" justifyContent="flex-end">
+                {isLoggedIn ? (
+                  <Box display="flex" alignItems="center" gap="1rem">
+                    <Typography variant="h6">{user.username}</Typography>
+                    <Button onClick={logout}>Logout</Button>
+                  </Box>
+                ) : (
+                  <Typography variant="h6">Login</Typography>
+                )}
+              </Box>
             </Box>
           </Toolbar>
         </AppBar>
