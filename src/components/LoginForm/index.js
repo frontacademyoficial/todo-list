@@ -1,40 +1,9 @@
 import Container from "@mui/material/Container";
-import { useState } from "react";
-import axios from "axios";
 import { Box, Button, CircularProgress, TextField } from "@mui/material";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginForm() {
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const login = ({ username, password }) => {
-    setError("");
-    setLoading(true);
-
-    axios
-      .post(
-        "https://dummyjson.com/auth/login",
-        {
-          username,
-          password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) => {
-        setError("Erro ao fazer login");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const { login, error, loading } = useAuth();
 
   const onSubmit = (e) => {
     e.preventDefault();

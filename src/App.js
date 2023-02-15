@@ -2,9 +2,10 @@ import Box from "@mui/material/Box";
 import HomeContainer from "./containers/HomeContainer";
 import LoginForm from "./components/LoginForm";
 import MainLayout from "./layouts/MainLayout";
+import { useAuth } from "./context/AuthContext";
 
 export default function App() {
-  const isLoggedIn = false;
+  const { isLoggedIn } = useAuth();
 
   return (
     <MainLayout>

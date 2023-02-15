@@ -5,16 +5,19 @@ import reportWebVitals from "./reportWebVitals";
 import store from "./store/store";
 import { Provider } from "react-redux";
 import { SnackbarProvider } from "notistack";
+import { AuthProvider } from "./context/AuthContext";
 import "./styles/index.scss";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <SnackbarProvider maxSnack={3}>
-        <App />
-      </SnackbarProvider>
-    </Provider>
+    <AuthProvider>
+      <Provider store={store}>
+        <SnackbarProvider maxSnack={3}>
+          <App />
+        </SnackbarProvider>
+      </Provider>
+    </AuthProvider>
   </React.StrictMode>
 );
 

@@ -4,13 +4,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import logo from "../images/front-academy-logo.png";
 import { Button } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
-  const user = {};
-  const logout = () => {
-    console.log("logout");
-  };
-  const isLoggedIn = false;
+  const { isLoggedIn, user, logout } = useAuth();
 
   return (
     <>
